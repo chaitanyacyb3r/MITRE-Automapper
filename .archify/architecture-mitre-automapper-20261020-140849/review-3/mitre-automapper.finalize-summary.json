@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\candidate.json",
+    "sha256": "aa3d8da5da359eb0eb9255aa48ac6dec55658de3d9b762911510e7432d574f81",
+    "bytes": 19164
+  },
+  "artifact": {
+    "path": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\mitre-automapper.html",
+    "sha256": "436444ad0bd19abe6e26861d6731c069863f9d6d04c12e47dff42de837c4ea50",
+    "bytes": 846037
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-3\\mitre-automapper.finalize.json",
+    "summaryReceipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-3\\mitre-automapper.finalize-summary.json",
+    "browserCheckReceipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-3\\mitre-automapper.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-20T08:39:12.277Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 6873,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "resolvedCrossovers": 1,
+      "routesOverSuggestedBends": 1
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [
+        {
+          "left": {
+            "id": "dashboard-to-ml",
+            "from": "dashboard",
+            "to": "ml_classifier",
+            "label": "train / predict",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "right": {
+            "id": "dashboard-to-ransom",
+            "from": "dashboard",
+            "to": "ransom_monitor",
+            "label": "launch simulation",
+            "collectionIndex": 4,
+            "artifactIndex": 5
+          },
+          "point": [
+            544,
+            405
+          ],
+          "sharedNode": "dashboard"
+        }
+      ],
+      "detours": [
+        {
+          "relationship": {
+            "id": "cve-to-mapper",
+            "from": "cve_fetcher",
+            "to": "mapper",
+            "label": "description",
+            "collectionIndex": 7,
+            "artifactIndex": 8
+          },
+          "bends": 3,
+          "stretch": 1.163
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "dashboard → ml_classifier and dashboard → ransom_monitor cross next to dashboard: move node ml_classifier or ransom_monitor so the two reach dashboard from different sides (for example one level with it, one directly above or below it).",
+      "cve_fetcher → mapper needs 3 bends: move node cve_fetcher or mapper so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

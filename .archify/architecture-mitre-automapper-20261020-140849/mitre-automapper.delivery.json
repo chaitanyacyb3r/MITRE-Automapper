@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "04ecf712-e7f8-46cd-9855-b12a628af176",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\candidate.json",
+  "output": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\mitre-automapper.html",
+  "specification": {
+    "sha256": "aa3d8da5da359eb0eb9255aa48ac6dec55658de3d9b762911510e7432d574f81",
+    "bytes": 19164
+  },
+  "artifact": {
+    "sha256": "436444ad0bd19abe6e26861d6731c069863f9d6d04c12e47dff42de837c4ea50",
+    "bytes": 846037
+  }
+}

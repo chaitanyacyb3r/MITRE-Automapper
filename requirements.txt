@@ -1,0 +1,13 @@
+pandas
+scikit-learn
+nltk
+streamlit
+requests
+stix2
+taxii2-client
+sentence-transformers
+torch
+fpdf
+plotly
+pefile
+watchdog

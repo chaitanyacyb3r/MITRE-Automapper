@@ -1,0 +1,412 @@
+{
+    "schema_version":  1,
+    "diagram_type":  "architecture",
+    "meta":  {
+                 "title":  "MITRE AutoMapper: Runtime Architecture",
+                 "locale":  "en",
+                 "output":  ".archify/architecture-mitre-automapper-20261020-140849/mitre-automapper.html",
+                 "quality_profile":  "showcase"
+             },
+    "components":  [
+                       {
+                           "id":  "analyst",
+                           "type":  "external",
+                           "label":  "Security Analyst",
+                           "sublabel":  "Browser session",
+                           "icon":  "person",
+                           "pos":  [
+                                       20,
+                                       340
+                                   ],
+                           "size":  [
+                                        160,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "dashboard",
+                           "type":  "frontend",
+                           "label":  "Streamlit SOC Dashboard",
+                           "sublabel":  "Five tabs, cached singletons",
+                           "tag":  "app.py",
+                           "pos":  [
+                                       320,
+                                       310
+                                   ],
+                           "size":  [
+                                        200,
+                                        120
+                                    ]
+                       },
+                       {
+                           "id":  "mapper",
+                           "type":  "backend",
+                           "label":  "MITRE Mapper",
+                           "sublabel":  "SBERT + cosine similarity",
+                           "tag":  "top-k technique ranking",
+                           "pos":  [
+                                       320,
+                                       50
+                                   ],
+                           "size":  [
+                                        200,
+                                        90
+                                    ]
+                       },
+                       {
+                           "id":  "static_analyzer",
+                           "type":  "backend",
+                           "label":  "Static Analyzer",
+                           "sublabel":  "Hashes, entropy, pefile imports",
+                           "tag":  "signature to TTP",
+                           "pos":  [
+                                       680,
+                                       180
+                                   ],
+                           "size":  [
+                                        190,
+                                        84
+                                    ]
+                       },
+                       {
+                           "id":  "cve_fetcher",
+                           "type":  "backend",
+                           "label":  "CVE Fetcher",
+                           "sublabel":  "Fetch and normalize advisory",
+                           "tag":  "CIRCL then NVD",
+                           "pos":  [
+                                       680,
+                                       55
+                                   ],
+                           "size":  [
+                                        190,
+                                        84
+                                    ]
+                       },
+                       {
+                           "id":  "ml_classifier",
+                           "type":  "backend",
+                           "label":  "ML Classifier",
+                           "sublabel":  "Random Forest, seven features",
+                           "tag":  "train / predict",
+                           "pos":  [
+                                       680,
+                                       345
+                                   ],
+                           "size":  [
+                                        190,
+                                        84
+                                    ]
+                       },
+                       {
+                           "id":  "ransom_monitor",
+                           "type":  "backend",
+                           "label":  "RansomGuard Monitor",
+                           "sublabel":  "In-UI event simulation",
+                           "tag":  "rate + entropy heuristics",
+                           "pos":  [
+                                       680,
+                                       510
+                                   ],
+                           "size":  [
+                                        190,
+                                        84
+                                    ]
+                       },
+                       {
+                           "id":  "session_state",
+                           "type":  "database",
+                           "label":  "Session State",
+                           "sublabel":  "Per-tab analysis results",
+                           "tag":  "st.session_state",
+                           "pos":  [
+                                       320,
+                                       520
+                                   ],
+                           "size":  [
+                                        200,
+                                        70
+                                    ]
+                       },
+                       {
+                           "id":  "report_builder",
+                           "type":  "backend",
+                           "label":  "Report Builder",
+                           "sublabel":  "FPDF, in-memory PDF",
+                           "tag":  "base64 download",
+                           "pos":  [
+                                       320,
+                                       660
+                                   ],
+                           "size":  [
+                                        200,
+                                        70
+                                    ]
+                       },
+                       {
+                           "id":  "mitre_corpus",
+                           "type":  "database",
+                           "label":  "MITRE ATT\u0026CK STIX",
+                           "sublabel":  "Techniques and mitigations",
+                           "tag":  "enterprise-attack.json",
+                           "pos":  [
+                                       20,
+                                       55
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "sbert_model",
+                           "type":  "database",
+                           "label":  "all-MiniLM-L6-v2",
+                           "sublabel":  "Sentence-BERT encoder",
+                           "tag":  "local model cache",
+                           "pos":  [
+                                       20,
+                                       170
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "circl_api",
+                           "type":  "cloud",
+                           "label":  "CIRCL CVE API",
+                           "sublabel":  "cve.circl.lu",
+                           "tag":  "primary lookup",
+                           "pos":  [
+                                       960,
+                                       50
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "nvd_api",
+                           "type":  "cloud",
+                           "label":  "NVD API",
+                           "sublabel":  "services.nvd.nist.gov",
+                           "tag":  "fallback lookup",
+                           "pos":  [
+                                       960,
+                                       165
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "training_dataset",
+                           "type":  "database",
+                           "label":  "Training Dataset",
+                           "sublabel":  "Labeled feature rows",
+                           "tag":  "training_dataset.csv",
+                           "pos":  [
+                                       960,
+                                       340
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       },
+                       {
+                           "id":  "rf_model",
+                           "type":  "database",
+                           "label":  "Random Forest Model",
+                           "sublabel":  "Pickled classifier",
+                           "tag":  "malware_model.pkl",
+                           "pos":  [
+                                       960,
+                                       450
+                                   ],
+                           "size":  [
+                                        180,
+                                        66
+                                    ]
+                       }
+                   ],
+    "boundaries":  [
+                       {
+                           "kind":  "region",
+                           "label":  "Streamlit server process",
+                           "wraps":  [
+                                         "dashboard",
+                                         "mapper",
+                                         "static_analyzer",
+                                         "cve_fetcher",
+                                         "ml_classifier",
+                                         "ransom_monitor",
+                                         "session_state",
+                                         "report_builder"
+                                     ]
+                       }
+                   ],
+    "connections":  [
+                        {
+                            "id":  "analyst-submits",
+                            "from":  "analyst",
+                            "to":  "dashboard",
+                            "label":  "upload / query",
+                            "variant":  "emphasis"
+                        },
+                        {
+                            "id":  "dashboard-to-cve",
+                            "from":  "dashboard",
+                            "to":  "cve_fetcher",
+                            "label":  "CVE ID",
+                            "fromSide":  "right",
+                            "toSide":  "left"
+                        },
+                        {
+                            "id":  "dashboard-to-static",
+                            "from":  "dashboard",
+                            "to":  "static_analyzer",
+                            "label":  "analyze file",
+                            "variant":  "emphasis",
+                            "fromSide":  "right",
+                            "toSide":  "left"
+                        },
+                        {
+                            "id":  "dashboard-to-ml",
+                            "from":  "dashboard",
+                            "to":  "ml_classifier",
+                            "label":  "train / predict",
+                            "fromSide":  "right",
+                            "toSide":  "left"
+                        },
+                        {
+                            "id":  "dashboard-to-ransom",
+                            "from":  "dashboard",
+                            "to":  "ransom_monitor",
+                            "label":  "launch simulation",
+                            "fromSide":  "right",
+                            "toSide":  "left"
+                        },
+                        {
+                            "id":  "dashboard-to-session",
+                            "from":  "dashboard",
+                            "to":  "session_state",
+                            "label":  "tab results",
+                            "fromSide":  "bottom",
+                            "toSide":  "top"
+                        },
+                        {
+                            "id":  "dashboard-to-mapper",
+                            "from":  "dashboard",
+                            "to":  "mapper",
+                            "label":  "map text / lookup mitigations",
+                            "fromSide":  "top",
+                            "toSide":  "bottom"
+                        },
+                        {
+                            "id":  "cve-to-mapper",
+                            "from":  "cve_fetcher",
+                            "to":  "mapper",
+                            "label":  "description",
+                            "fromSide":  "top",
+                            "toSide":  "right"
+                        },
+                        {
+                            "id":  "mapper-to-corpus",
+                            "from":  "mapper",
+                            "to":  "mitre_corpus",
+                            "label":  "STIX data",
+                            "fromSide":  "left",
+                            "toSide":  "right"
+                        },
+                        {
+                            "id":  "mapper-to-sbert",
+                            "from":  "mapper",
+                            "to":  "sbert_model",
+                            "label":  "encode",
+                            "fromSide":  "left",
+                            "toSide":  "right"
+                        },
+                        {
+                            "id":  "cve-to-circl",
+                            "from":  "cve_fetcher",
+                            "to":  "circl_api",
+                            "label":  "CVE JSON"
+                        },
+                        {
+                            "id":  "cve-to-nvd",
+                            "from":  "cve_fetcher",
+                            "to":  "nvd_api",
+                            "label":  "fallback"
+                        },
+                        {
+                            "id":  "ml-to-static",
+                            "from":  "ml_classifier",
+                            "to":  "static_analyzer",
+                            "label":  "feature extraction",
+                            "fromSide":  "top",
+                            "toSide":  "bottom"
+                        },
+                        {
+                            "id":  "ml-to-dataset",
+                            "from":  "ml_classifier",
+                            "to":  "training_dataset",
+                            "label":  "read CSV"
+                        },
+                        {
+                            "id":  "ml-to-model",
+                            "from":  "ml_classifier",
+                            "to":  "rf_model",
+                            "label":  "save / load"
+                        },
+                        {
+                            "id":  "session-to-report",
+                            "from":  "session_state",
+                            "to":  "report_builder",
+                            "label":  "aggregate sections",
+                            "fromSide":  "bottom",
+                            "toSide":  "top"
+                        },
+                        {
+                            "id":  "report-download",
+                            "from":  "report_builder",
+                            "to":  "analyst",
+                            "label":  "PDF download",
+                            "variant":  "emphasis"
+                        }
+                    ],
+    "cards":  [
+                  {
+                      "dot":  "cyan",
+                      "title":  "Analysis paths",
+                      "items":  [
+                                    "Static tab writes the upload to a temp file, then extracts hashes, entropy, strings and PE imports before mapping signatures to techniques.",
+                                    "CVE tab queries CIRCL first and falls back to NVD; the advisory text is then embedded and ranked against the MITRE corpus.",
+                                    "RansomGuard tab drives a stepped in-UI event loop, surfacing modification rate and entropy spikes.",
+                                    "ML tab trains a Random Forest from static features or loads the pickled model for family prediction."
+                                ]
+                  },
+                  {
+                      "dot":  "emerald",
+                      "title":  "Models and data",
+                      "items":  [
+                                    "Sentence-BERT encodes every MITRE technique once at startup; map_text ranks the input with cosine similarity.",
+                                    "The classifier reuses StaticAnalyzer to build its seven-feature vector and writes data/malware_model.pkl after training.",
+                                    "MITRE STIX and the training CSV are local artifacts; the STIX file is downloaded if it is missing."
+                                ]
+                  },
+                  {
+                      "dot":  "amber",
+                      "title":  "Runtime notes",
+                      "items":  [
+                                    "Engines are cached with st.cache_resource, so they are constructed once per Streamlit server process.",
+                                    "A watchdog-based RansomGuard observer exists in src/agent_alerts.py, but the Agent Alerts tab uses its own simulation loop instead.",
+                                    "The report builder reads session state and returns an in-memory PDF through a base64 download link."
+                                ]
+                  }
+              ]
+}

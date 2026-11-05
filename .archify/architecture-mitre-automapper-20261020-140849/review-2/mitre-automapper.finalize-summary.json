@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\candidate.json",
+    "sha256": "1f36d02112dc90b1f67299879fb07c82bb204064b6b2784d19e7ae59cb62e33f",
+    "bytes": 9127
+  },
+  "artifact": {
+    "path": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\mitre-automapper.html",
+    "sha256": "0b7be6071104635c860a17a87b69eeece691c9e2ad2cd1c69602fc5a97d78399",
+    "bytes": 846096
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-2\\mitre-automapper.finalize.json",
+    "summaryReceipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-2\\mitre-automapper.finalize-summary.json",
+    "browserCheckReceipt": "C:\\Users\\white\\Documents\\My Projects\\MALWARE PRJ POO KA\\MITRE_AutoMapper (1)\\MITRE_AutoMapper (1)\\MITRE_AutoMapper\\.archify\\architecture-mitre-automapper-20261020-140849\\review-2\\mitre-automapper.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-20T08:39:12.277Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 7151,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "resolvedCrossovers": 3,
+      "routesOverSuggestedBends": 1
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [
+        {
+          "left": {
+            "id": "dashboard-to-cve",
+            "from": "dashboard",
+            "to": "cve_fetcher",
+            "label": "CVE ID",
+            "collectionIndex": 1,
+            "artifactIndex": 2
+          },
+          "right": {
+            "id": "dashboard-to-static",
+            "from": "dashboard",
+            "to": "static_analyzer",
+            "label": "analyze file",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "point": [
+            544,
+            369
+          ],
+          "sharedNode": "dashboard"
+        },
+        {
+          "left": {
+            "id": "dashboard-to-cve",
+            "from": "dashboard",
+            "to": "cve_fetcher",
+            "label": "CVE ID",
+            "collectionIndex": 1,
+            "artifactIndex": 2
+          },
+          "right": {
+            "id": "dashboard-to-ml",
+            "from": "dashboard",
+            "to": "ml_classifier",
+            "label": "train / predict",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "point": [
+            656,
+            352
+          ],
+          "sharedNode": "dashboard"
+        },
+        {
+          "left": {
+            "id": "dashboard-to-static",
+            "from": "dashboard",
+            "to": "static_analyzer",
+            "label": "analyze file",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "right": {
+            "id": "dashboard-to-ml",
+            "from": "dashboard",
+            "to": "ml_classifier",
+            "label": "train / predict",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "point": [
+            544.0000000000001,
+            352
+          ],
+          "sharedNode": "dashboard"
+        }
+      ],
+      "detours": [
+        {
+          "relationship": {
+            "id": "cve-to-mapper",
+            "from": "cve_fetcher",
+            "to": "mapper",
+            "label": "description",
+            "collectionIndex": 7,
+            "artifactIndex": 8
+          },
+          "bends": 3,
+          "stretch": 1.162
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "dashboard → cve_fetcher and dashboard → static_analyzer cross next to dashboard: move node cve_fetcher or static_analyzer so the two reach dashboard from different sides (for example one level with it, one directly above or below it).",
+      "dashboard → cve_fetcher and dashboard → ml_classifier cross next to dashboard: move node cve_fetcher or ml_classifier so the two reach dashboard from different sides (for example one level with it, one directly above or below it).",
+      "dashboard → static_analyzer and dashboard → ml_classifier cross next to dashboard: move node static_analyzer or ml_classifier so the two reach dashboard from different sides (for example one level with it, one directly above or below it).",
+      "cve_fetcher → mapper needs 3 bends: move node cve_fetcher or mapper so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}
