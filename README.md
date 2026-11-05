@@ -49,9 +49,3 @@ This project extends the original research (Branescu et al.) by transforming it 
 *   **Data Sources:** MITRE Enterprise ATT&CK (STIX 2.0), CIRCL CVE API
 *   **Reporting:** FPDF
 
-## 🎓 Viva Questions & Answers
-**Q: How did you improve upon the base paper?**
-A: "The original paper focused solely on classification accuracy. I expanded it into a practical **Cyber Defense Tool**. I added **Real-time Data Fetching** (so it works on yesterday's zero-days), **Mitigation Mapping** (so it's actionable), and **Automated Reporting** (for SOC workflows)."
-
-**Q: Where do the mitigations come from?**
-A: "I parse the 'Course of Action' objects from the MITRE STIX JSON and link them to Techniques using the `mitigates` relationship type."
