@@ -2,7 +2,7 @@
 
 **Title:** Automated Threat Intelligence Mapping & Mitigation Recommendation System
 
-## 🌟 Unique Features (Why this is YOUR project)
+## 🌟 Unique Features
 This project extends the original research (Branescu et al.) by transforming it from a simple "classifier" into a **Full-Fledged Security Operations Center (SOC) Tool**.
 
 ### 🚀 What makes this special?
