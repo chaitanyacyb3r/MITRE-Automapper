@@ -1,6 +1,5 @@
 # 🛡️ Advanced MITRE ATT&CK AutoMapper & SOC Assistant
 
-## 🎓 University Major Project
 **Title:** Automated Threat Intelligence Mapping & Mitigation Recommendation System
 
 ## 🌟 Unique Features (Why this is YOUR project)
