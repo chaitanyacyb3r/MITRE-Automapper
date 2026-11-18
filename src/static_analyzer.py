@@ -2,6 +2,7 @@ import hashlib
 import math
 import re
 import os
+from src.textutils import shannon_entropy
 
 try:
     import pefile
@@ -63,12 +64,12 @@ class StaticAnalyzer:
                 "tactic": "Defense Evasion / Privilege Escalation",
                 "description": "Injecting code into another process space using VirtualAllocEx.",
                 "url": "https://attack.mitre.org/techniques/T1055/",
-                "severity": 8.0,
-                "pattern_desc": "VirtualAllocEx API import detected (Process Injection)."
+                "severity": 6.0,
+                "pattern_desc": "VirtualAllocEx API import detected (remote memory allocation; weak signal alone)."
             },
             "isdebuggerpresent": {
-                "id": "T1497",
-                "name": "Sandbox Evasion",
+                "id": "T1622",
+                "name": "Debugger Evasion",
                 "tactic": "Defense Evasion",
                 "description": "Checking for debugger presence to evade analysis.",
                 "url": "https://attack.mitre.org/techniques/T1497/",
@@ -102,9 +103,18 @@ class StaticAnalyzer:
                 "severity": 5.0,
                 "pattern_desc": "ShellExecute API import detected."
             },
+            "vssadmin": {
+                "id": "T1490",
+                "name": "Inhibit System Recovery",
+                "tactic": "Impact",
+                "description": "Deleting shadow copies/backups (vssadmin delete shadows) so victims cannot restore files.",
+                "url": "https://attack.mitre.org/techniques/T1490/",
+                "severity": 8.5,
+                "pattern_desc": "vssadmin string found (shadow copy tampering)."
+            },
             "debugger": {
-                "id": "T1497",
-                "name": "Sandbox Evasion (Debugger)",
+                "id": "T1622",
+                "name": "Debugger Evasion (generic)",
                 "tactic": "Defense Evasion",
                 "description": "Generic debugger detection checks.",
                 "url": "https://attack.mitre.org/techniques/T1497/",
@@ -114,18 +124,10 @@ class StaticAnalyzer:
         }
 
     def calculate_entropy(self, data):
-        """Calculates Shannon Entropy of binary data."""
-        if not data:
-            return 0.0
-        entropy = 0
-        length = len(data)
-        frequencies = {}
-        for byte in data:
-            frequencies[byte] = frequencies.get(byte, 0) + 1
-        for count in frequencies.values():
-            p = count / length
-            entropy -= p * math.log2(p)
-        return round(entropy, 2)
+        """Shannon entropy (0-8 bits/byte) of `data`, rounded to 2 decimals.
+        Delegates to src.textutils.shannon_entropy so RansomGuard and this class share one
+        implementation (previously duplicated, which risks the two drifting apart)."""
+        return round(shannon_entropy(data), 2)
 
     def analyze_file(self, file_path):
         """
@@ -222,6 +224,16 @@ class StaticAnalyzer:
                                             "url": sig_val["url"]
                                         }
 
+
+                # Classic remote-process-injection triad: allocate + write + start a remote thread.
+                # Any ONE of these is common in legitimate software (debuggers, game overlays);
+                # all THREE together is the textbook T1055 pattern, so it earns a high severity.
+                lowered = {a.lower() for a in detected_apis}
+                if {"virtualallocex", "writeprocessmemory", "createremotethread"} <= lowered:
+                    mapped_techniques["T1055"] = {
+                        "id": "T1055", "name": "Process Injection", "tactic": "Defense Evasion / Privilege Escalation",
+                        "severity": 9.0, "reason": "Imports VirtualAllocEx + WriteProcessMemory + CreateRemoteThread",
+                        "url": "https://attack.mitre.org/techniques/T1055/"}
             except Exception as e:
                 # Not a valid PE or error parsing
                 pass

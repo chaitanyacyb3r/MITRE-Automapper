@@ -9,12 +9,15 @@ import os
 import tempfile
 import time
 import random
+import shutil
+import json
 
 from src.mapper import MitreMapper
 from src.cve_fetcher import get_cve_details
 from src.static_analyzer import StaticAnalyzer
 from src.ml_classifier import MalwareClassifier
-from src.agent_alerts import RansomGuard
+from src.agent_alerts import RansomGuard, RansomSimulator
+from src.navigator import build_layer, layer_to_json
 
 # 1. Custom CSS Theme & Page Setup
 st.set_page_config(page_title="Malware Analysis & Threat Attribution", page_icon="🛡️", layout="wide")
@@ -466,6 +469,9 @@ def main():
                 st.info(cve['description'])
                 
             st.markdown("<h4 class='section-title'>Predicted Exploitation Attack Vectors</h4>", unsafe_allow_html=True)
+            st.download_button("Download ATT&CK Navigator layer (.json)",
+                               layer_to_json(build_layer(cve["mapped_techniques"], name="Automapper " + cve["id"], description=cve["description"][:200])),
+                               file_name=cve["id"] + "_navigator_layer.json", mime="application/json")
             
             col_cv1, col_cv2 = st.columns([3, 2])
             
@@ -503,7 +509,7 @@ def main():
     # ------------------ TAB 3: AGENT ALERTS (RansomGuard) ------------------
     with tab_alerts:
         st.markdown("<h3 class='section-title'>RansomGuard Heuristic Event Monitor</h3>", unsafe_allow_html=True)
-        st.write("Dynamic Agent mimicking the watchdog-based real-time event analyzer. Watch for mass modifications and high-entropy post-write file encryption.")
+        st.write("Watches a real folder with watchdog. A SAFE simulator encrypts its own temp files; detection uses measured entropy jumps, ransomware extensions and distinct-file volume.")
         
         sim_cols_1, sim_cols_2 = st.columns([1, 3])
         
@@ -520,77 +526,48 @@ def main():
             
         if btn_start:
             st.session_state.alerts_list = []
-            
-            # Placeholders for real-time stream
-            tbl_p = st.empty()
-            chart_p = st.empty()
-            
-            files = [f"salary_report", f"database_dump", f"financials", f"customer_records", f"personal_photo", f"source_code", f"backup_config"]
-            extensions = [".xlsx", ".sql", ".pdf", ".csv", ".jpg", ".py", ".zip"]
-            crypt_extensions = [".crypt", ".locked", ".wannacry", ".locked"]
-            
-            # Start loop
-            rate = 0
-            for step in range(35):
-                time.sleep(0.2)
-                
-                # Malicious encryption behavior starts after step 10
-                is_malicious = step > 10
-                
-                if is_malicious:
-                    rate = random.randint(6, 18)
-                    file_name = random.choice(files) + f"_{step}" + random.choice(crypt_extensions)
-                    entropy = round(random.uniform(7.6, 7.98), 2)
-                    event_type = "Renamed & Encrypted (Lockout)"
-                else:
-                    rate = 1 if random.random() > 0.6 else 0
-                    file_name = random.choice(files) + random.choice(extensions)
-                    entropy = round(random.uniform(3.2, 5.5), 2)
-                    event_type = "Modified" if rate > 0 else "None"
-                    
-                if event_type != "None":
-                    st.session_state.alerts_list.append({
-                        "Timestamp": time.strftime("%H:%M:%S"),
-                        "Event": event_type,
-                        "File Name": file_name,
-                        "Entropy": entropy,
-                        "Rate (mod/sec)": rate
-                    })
-                    
-                # Update tables
-                df_alerts = pd.DataFrame(st.session_state.alerts_list)
-                tbl_p.dataframe(df_alerts.tail(8), use_container_width=True)
-                
-                # Update line graph
-                fig_line = px.line(
-                    df_alerts, y="Rate (mod/sec)", x=df_alerts.index,
-                    title="Real-Time File Modification Rate",
-                    color_discrete_sequence=["#EF4444" if is_malicious else "#10B981"]
-                )
-                fig_line.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font={'color': "#fff"},
-                    height=280
-                )
-                try:
-                    chart_p.plotly_chart(fig_line, use_container_width=True)
-                except Exception:
-                    # Fallback: render directly with the top-level Streamlit API
-                    # in case the placeholder object does not expose plotly_chart.
-                    st.plotly_chart(fig_line, use_container_width=True)
-                
-                if rate > 5:
-                    status_box.error(f"⚠️ SUSPICIOUS BEHAVIOR: Modifications rate is {rate}/sec. High entropy changes detected!")
-                    alert_box.markdown("""
-                    <div class="critical-alert">
-                        🚨 HEURISTIC RANSOMWARE ALERT: Active encryption observed in local directories! Files being locked!
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    status_box.info("Dynamic monitoring active. System state: Normal.")
-                    alert_box.empty()
-                    
+            tbl_p, chart_p = st.empty(), st.empty()
+            # REAL pipeline: a safe simulator creates real files in a temp folder and "encrypts" them
+            # (random bytes + .locked rename); RansomGuard watches that folder via OS file events,
+            # measures real entropy, and RansomDetector decides. Nothing outside the temp dir is touched.
+            work_dir = tempfile.mkdtemp(prefix="ransomguard_")
+            sim = RansomSimulator(work_dir, n_files=40, benign_seconds=4.0)
+            sim.create_victim_files()
+            guard = RansomGuard(work_dir)
+            live = []                                   # watchdog thread appends alerts here
+            guard.start_monitoring(live.append)
+            sim.start()
+            try:
+                t_end = None
+                while True:
+                    time.sleep(0.3)
+                    if not sim.is_running() and t_end is None:
+                        t_end = time.time() + 1.0       # let trailing file events arrive
+                    rows = [{"Timestamp": x["timestamp"], "Event": x["event"], "File Name": x["file"],
+                             "Entropy": x["entropy"], "Rate (mod/sec)": x["rate"],
+                             "Severity": x["severity"], "Reason": x["reason"]} for x in list(live)]
+                    st.session_state.alerts_list = rows
+                    if rows:
+                        df_alerts = pd.DataFrame(rows)
+                        tbl_p.dataframe(df_alerts.tail(8), use_container_width=True)
+                        fig_line = px.line(df_alerts, y="Rate (mod/sec)", x=df_alerts.index,
+                                           title="Suspicious files in sliding window",
+                                           color_discrete_sequence=["#EF4444" if guard.detector.critical else "#10B981"])
+                        fig_line.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                                               font={'color': "#fff"}, height=280)
+                        chart_p.plotly_chart(fig_line, use_container_width=True)
+                    if guard.detector.critical:
+                        status_box.error("SUSPICIOUS BEHAVIOR: many files showing entropy jumps / ransomware extensions.")
+                        alert_box.markdown('<div class="critical-alert">HEURISTIC RANSOMWARE ALERT: mass encryption detected by real entropy + rename analysis.</div>', unsafe_allow_html=True)
+                    else:
+                        status_box.info("Monitoring real file events. State: Normal.")
+                        alert_box.empty()
+                    if t_end and time.time() > t_end:
+                        break
+            finally:
+                guard.stop_monitoring()
+                sim.cleanup()
+
         # If not active, show current log
         elif st.session_state.alerts_list:
             df_alerts = pd.DataFrame(st.session_state.alerts_list)

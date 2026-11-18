@@ -4,6 +4,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from src.data_loader import load_data
+from src.textutils import clean_text
 
 class MitreMapper:
     def __init__(self):
@@ -17,12 +18,8 @@ class MitreMapper:
         self._generate_knowledge_base()
 
     def _clean_text(self, text):
-        if not isinstance(text, str):
-            return ""
-        text = re.sub(r'<[^>]+>', '', text)
-        text = re.sub(r'\bv?\d+(\.\d+)+\b', '[version]', text)
-        text = re.sub(r'CVE-\d{4}-\d{4,7}', 'CVE', text)
-        return text.strip()
+        """Thin wrapper around src.textutils.clean_text (kept so existing callers still work)."""
+        return clean_text(text)
 
     def _generate_knowledge_base(self):
         self.techniques_df['clean_desc'] = self.techniques_df['name'] + ": " + self.techniques_df['description'].apply(self._clean_text)

@@ -13,9 +13,19 @@ from src.static_analyzer import StaticAnalyzer
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASET_PATH = os.path.join(BASE_DIR, "data", "training_dataset.csv")
 MODEL_PATH = os.path.join(BASE_DIR, "data", "malware_model.pkl")
+HASH_PATH = MODEL_PATH + ".sha256"   # integrity sidecar: pickle.load can execute code, so verify first
+
+
+def _sha256_file(path):
+    """SHA-256 hex digest of a file (used to detect a tampered/replaced model file)."""
+    import hashlib
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
 
 def generate_synthetic_dataset():
-    """Generates 100 synthetic PE samples to train the Random Forest model."""
+    """Generates 100 SYNTHETIC rows (ranges chosen by hand). Accuracy on this data only proves the
+    pipeline works - it says nothing about real-malware performance (see README limitations)."""
     os.makedirs(os.path.dirname(DATASET_PATH), exist_ok=True)
     np.random.seed(42)
     
@@ -94,6 +104,8 @@ class MalwareClassifier:
         os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
         with open(MODEL_PATH, "wb") as f:
             pickle.dump(self.model, f)
+        with open(HASH_PATH, "w") as f:          # record the digest of what WE just wrote
+            f.write(_sha256_file(MODEL_PATH))
             
         return {
             "accuracy": round(accuracy * 100, 2),
@@ -104,7 +116,10 @@ class MalwareClassifier:
 
     def load_model(self):
         """Loads the pre-trained model from disk."""
-        if os.path.exists(MODEL_PATH):
+        # Security: unpickling attacker-controlled bytes = arbitrary code execution (CWE-502).
+        # We only load if a trusted digest exists and matches; otherwise caller retrains.
+        if os.path.exists(MODEL_PATH) and os.path.exists(HASH_PATH) \
+                and open(HASH_PATH).read().strip() == _sha256_file(MODEL_PATH):
             with open(MODEL_PATH, "rb") as f:
                 self.model = pickle.load(f)
             return True
